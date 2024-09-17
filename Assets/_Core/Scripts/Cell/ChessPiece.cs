@@ -8,28 +8,20 @@ public class ChessPiece : MonoBehaviour
     [SerializeField] private ChessPieceType type;
     [SerializeField] private ChessPieceColor color;
     [SerializeField] private Image image;
+    [SerializeField] private AspectRatioFitter aspectRatioFitter;
 
     private Cell currentCell;
 
     public Cell CurrentCell { get => currentCell; set => currentCell = value; }
     public ChessPieceType Type { get => type; set => type = value; }
     public ChessPieceColor Color { get => color; set => color = value; }
+    public AspectRatioFitter AspectRatioFitter { get => aspectRatioFitter; set => aspectRatioFitter = value; }
 
     public void Init(ChessPieceType type, ChessPieceColor color, Sprite image)
     {
         this.type = type;
         this.color = color;
         this.image.sprite = image;
-    }
-
-    public async void SetCurrentCell(Cell cell)
-    {
-        currentCell = cell;
-        if (cell == null) return;
-        await LMotion.Create(transform.localPosition, Vector3.zero, 0.3f)
-            .WithEase(Ease.InOutCubic)
-            .BindWithState(transform, (location, target) => target.localPosition = location)
-            .ToUniTask();
     }
 
     public async UniTask<bool> Move(Cell to)
@@ -39,7 +31,15 @@ public class ChessPiece : MonoBehaviour
         ChessPiece chessPiece = to.GetChessPiece();
         if (chessPiece != this && chessPiece != null)
         {
-            if (chessPiece.Color == this.Color) return false;
+            if (chessPiece.Color == this.Color)
+            {
+                this.transform.SetParent(currentCell.transform);
+                await LMotion.Create(transform.localPosition, Vector3.zero, 0f)
+                    .WithEase(Ease.InOutCubic)
+                    .BindWithState(transform, (location, target) => target.localPosition = location)
+                    .ToUniTask();
+                return false;
+            }
             Destroy(chessPiece.gameObject);
             to.SetChessPiece(null);
         }
@@ -85,6 +85,11 @@ public class ChessPiece : MonoBehaviour
         currentCell = to;
         to.SetChessPiece(this);
 
+        return true;
+    }
+
+    private bool IsMoveValid(Cell to)
+    {
         return true;
     }
 }

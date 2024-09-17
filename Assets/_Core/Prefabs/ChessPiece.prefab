@@ -92,6 +92,7 @@ MonoBehaviour:
   type: 4
   color: 1
   image: {fileID: 698639721322903210}
+  aspectRatioFitter: {fileID: 9127623916823858204}
 --- !u!114 &9127623916823858204
 MonoBehaviour:
   m_ObjectHideFlags: 0

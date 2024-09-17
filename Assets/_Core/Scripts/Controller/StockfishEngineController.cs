@@ -135,6 +135,15 @@ public class StockfishEngineController : Singleton<StockfishEngineController>
         }
         else if (response.StartsWith("bestmove")) // bestmove g1f3 ponder e7e5
         {
+            if (response.Contains("none"))
+            {
+                UnityEngine.Debug.Log("No move found");
+                MainThreadDispatcher.RunTaskInMainThread(() =>
+                {
+                    BoardController.Instance.NewGame();
+                }, 5f).Forget();
+                return;
+            }
             string from = response.Split(' ')[1].Substring(0, 2);
             string to = response.Split(' ')[1].Substring(2, 2);
             MainThreadDispatcher.RunTaskInMainThread(() =>

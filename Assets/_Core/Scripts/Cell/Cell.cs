@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Cell : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler
+public class Cell : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IDragHandler, IBeginDragHandler
 {
     [SerializeField] private Image backGround;
     [SerializeField] private CellText cellText;
@@ -81,5 +81,23 @@ public class Cell : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IP
     {
         BoardController.Instance.MoveChessPiece(selectedChessPiece, currentHoverCell).Forget();
         selectedChessPiece = null;
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (selectedChessPiece != null)
+        {
+            selectedChessPiece.transform.position = eventData.position;
+        }
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (selectedChessPiece != null)
+        {
+            selectedChessPiece.AspectRatioFitter.enabled = false;
+            selectedChessPiece.transform.SetParent(transform.parent.parent);
+            selectedChessPiece.transform.position = eventData.position;
+        }
     }
 }
